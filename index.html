@@ -3,63 +3,117 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Konversi PT ke PX</title>
+    <title>Konversi PT ↔ PX</title>
 
     <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Tailwind config optional -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {}
-            }
-        }
-    </script>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 class="text-2xl font-bold text-center mb-6">Konversi PT → PX</h1>
+        <h1 class="text-2xl font-bold text-center mb-6">Konversi PT ↔ PX (Realtime)</h1>
 
+        <!-- DPI SELECT -->
         <div class="mb-4">
-            <label class="block mb-2 font-medium">Masukkan nilai (pt):</label>
+            <label class="block mb-2 font-medium">Pilih DPI:</label>
+
+            <select id="dpiSelect"
+                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onchange="onDpiChange()">
+                <option value="96">96 (Standar Web)</option>
+                <option value="72">72 (Typografi)</option>
+                <option value="150">150</option>
+                <option value="300">300 (High Print)</option>
+                <option value="600">600</option>
+                <option value="custom">Custom (Ketik Manual)</option>
+            </select>
+        </div>
+
+        <!-- Custom DPI -->
+        <div class="mb-4">
+            <label class="block mb-2 font-medium">DPI Custom:</label>
+            <input id="inputDpiCustom" type="number" placeholder="Masukkan DPI"
+                class="w-full p-3 border rounded-lg bg-gray-200 text-gray-500"
+                disabled oninput="convertAll()" />
+        </div>
+
+        <!-- Input PT -->
+        <div class="mb-4">
+            <label class="block mb-2 font-medium">PT:</label>
             <input id="inputPt" type="number" placeholder="contoh: 12"
-                   class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                oninput="convertPt()" />
         </div>
 
+        <!-- Input PX -->
         <div class="mb-4">
-            <label class="block mb-2 font-medium">DPI (default 96):</label>
-            <input id="inputDpi" type="number" placeholder="96"
-                   class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <label class="block mb-2 font-medium">PX:</label>
+            <input id="inputPx" type="number" placeholder="contoh: 16"
+                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                oninput="convertPx()" />
         </div>
 
-        <button onclick="convertPtToPx()"
-                class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition">
-            Konversi
-        </button>
-
-        <div class="mt-5 p-4 bg-gray-50 rounded-lg text-center">
-            <p class="text-lg font-semibold">Hasil:</p>
-            <p id="outputPx" class="text-2xl font-bold text-blue-700 mt-2">0 px</p>
-        </div>
+        <!-- Result Note -->
+        <p class="text-center text-gray-500 mt-4 text-sm">
+            Konversi otomatis saat mengetik
+        </p>
     </div>
 
-    <script>
-        function convertPtToPx() {
-            const pt = parseFloat(document.getElementById("inputPt").value);
-            const dpi = parseFloat(document.getElementById("inputDpi").value) || 96;
+<script>
+function getDpi() {
+    const dpiSelect = document.getElementById("dpiSelect").value;
+    const dpiCustom = parseFloat(document.getElementById("inputDpiCustom").value);
 
-            if (isNaN(pt)) {
-                alert("Masukkan nilai PT yang valid!");
-                return;
-            }
+    if (dpiSelect === "custom") {
+        return isNaN(dpiCustom) ? 96 : dpiCustom;
+    }
+    return parseFloat(dpiSelect);
+}
 
-            const px = pt * (dpi / 72);
+function onDpiChange() {
+    const select = document.getElementById("dpiSelect");
+    const customInput = document.getElementById("inputDpiCustom");
 
-            document.getElementById("outputPx").innerText = px.toFixed(3) + " px";
-        }
-    </script>
+    if (select.value === "custom") {
+        customInput.disabled = false;
+        customInput.classList.remove("bg-gray-200", "text-gray-500");
+    } else {
+        customInput.disabled = true;
+        customInput.value = "";
+        customInput.classList.add("bg-gray-200", "text-gray-500");
+    }
+    convertAll();
+}
+
+function convertPt() {
+    const pt = parseFloat(document.getElementById("inputPt").value);
+    const dpi = getDpi();
+
+    if (!isNaN(pt)) {
+        const px = pt * (dpi / 72);
+        document.getElementById("inputPx").value = px.toFixed(3);
+    }
+}
+
+function convertPx() {
+    const px = parseFloat(document.getElementById("inputPx").value);
+    const dpi = getDpi();
+
+    if (!isNaN(px)) {
+        const pt = px * (72 / dpi);
+        document.getElementById("inputPt").value = pt.toFixed(3);
+    }
+}
+
+function convertAll() {
+    const ptField = document.getElementById("inputPt").value;
+    const pxField = document.getElementById("inputPx").value;
+
+    if (ptField !== "") convertPt();
+    if (pxField !== "") convertPx();
+}
+</script>
 
 </body>
 </html>
