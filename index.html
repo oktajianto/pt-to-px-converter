@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Konversi PT ke PX</title>
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind config optional -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold text-center mb-6">Konversi PT → PX</h1>
+
+        <div class="mb-4">
+            <label class="block mb-2 font-medium">Masukkan nilai (pt):</label>
+            <input id="inputPt" type="number" placeholder="contoh: 12"
+                   class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div class="mb-4">
+            <label class="block mb-2 font-medium">DPI (default 96):</label>
+            <input id="inputDpi" type="number" placeholder="96"
+                   class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <button onclick="convertPtToPx()"
+                class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition">
+            Konversi
+        </button>
+
+        <div class="mt-5 p-4 bg-gray-50 rounded-lg text-center">
+            <p class="text-lg font-semibold">Hasil:</p>
+            <p id="outputPx" class="text-2xl font-bold text-blue-700 mt-2">0 px</p>
+        </div>
+    </div>
+
+    <script>
+        function convertPtToPx() {
+            const pt = parseFloat(document.getElementById("inputPt").value);
+            const dpi = parseFloat(document.getElementById("inputDpi").value) || 96;
+
+            if (isNaN(pt)) {
+                alert("Masukkan nilai PT yang valid!");
+                return;
+            }
+
+            const px = pt * (dpi / 72);
+
+            document.getElementById("outputPx").innerText = px.toFixed(3) + " px";
+        }
+    </script>
+
+</body>
+</html>
